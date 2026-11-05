@@ -86,8 +86,18 @@ else
 fi
 
 # --- 7) Pasang dependensi (sekali saja; bisa beberapa menit).
-echo "Memasang dependensi..."
-npm install --no-audit --no-fund
+echo "Memasang dependensi (ini yang paling lama)..."
+ok=0
+for i in 1 2 3 4 5 6; do
+  if npm install --no-audit --no-fund --fetch-retries=10 --fetch-retry-mintimeout=5000 --fetch-retry-maxtimeout=120000 --fetch-timeout=900000 --maxsockets=3; then ok=1; break; fi
+  echo "Koneksi sempat putus. Mencoba lagi (percobaan $i dari 6)..."
+  sleep 5
+done
+if [ "$ok" != 1 ]; then
+  echo "Pemasangan paket belum tuntas setelah 6 percobaan."
+  echo "Jalankan skrip ini sekali lagi nanti — cache membuat sisanya makin sedikit."
+  exit 1
+fi
 
 echo ""
 echo "============================================================"
