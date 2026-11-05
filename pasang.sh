@@ -73,10 +73,17 @@ fi
 
 # --- 6) Pasang dependensi (sekali saja; bisa beberapa menit).
 echo "Memasang dependensi (ini yang paling lama)..."
+# npm bawaan distro kadang terlalu tua (paket ini perlu npm >= 10) — naikkan dulu.
+if [ "$(npm --version 2>/dev/null | cut -d. -f1)" -lt 10 ] 2>/dev/null; then
+  echo "Memperbarui npm ke versi terbaru..."
+  npm install -g npm@latest || true
+fi
 ok=0
 for i in 1 2 3 4 5 6; do
-  if npm install --no-audit --no-fund --fetch-retries=10 --fetch-retry-mintimeout=5000 --fetch-retry-maxtimeout=120000 --fetch-timeout=900000 --maxsockets=3; then ok=1; break; fi
-  echo "Koneksi sempat putus. Mencoba lagi (percobaan $i dari 6)..."
+  if npm install --no-audit --no-fund --prefer-offline --fetch-retries=10 --fetch-retry-mintimeout=5000 --fetch-retry-maxtimeout=120000 --fetch-timeout=900000 --maxsockets=3; then ok=1; break; fi
+  echo "Percobaan $i gagal. Membersihkan sisa pemasangan yang rusak..."
+  rm -rf "$DIR/freellmapi"/node_modules/.*-* 2>/dev/null || true
+  if [ "$i" -ge 2 ]; then rm -rf "$DIR/freellmapi/node_modules"; fi
   sleep 5
 done
 if [ "$ok" != 1 ]; then
