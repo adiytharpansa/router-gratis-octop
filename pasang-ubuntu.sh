@@ -48,13 +48,20 @@ if [ ! -f "$DIR/freellmapi/package.json" ]; then
 fi
 
 # --- 4) Pastikan Node.js cukup baru (perlu >= 22.13 untuk SQLite bawaan Node).
-#        Di Ubuntu, Node dipasang lewat nvm (tanpa perlu sudo).
+#        Jalur pertama: paket Ubuntu (apt) — paling tahan koneksi lambat.
+#        Jalur cadangan: nvm.
 export NVM_DIR="$HOME/.nvm"
 load_nvm() { [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" || true; }
+node_cukup() { command -v node >/dev/null 2>&1 && [ "$(node -p 'process.versions.node.split(".")[0]')" -ge 22 ]; }
 load_nvm
-if ! command -v node >/dev/null 2>&1 || [ "$(node -p 'process.versions.node.split(".")[0]')" -lt 22 ]; then
+if ! node_cukup; then
+  echo "Mencoba Node.js dari repositori Ubuntu (apt)..."
+  apt-get install -y nodejs npm || { apt-get update -y && apt-get install -y nodejs npm; } || true
+fi
+if ! node_cukup; then
   echo "Memasang Node.js 24 lewat nvm (sekali saja)..."
   if [ ! -s "$NVM_DIR/nvm.sh" ]; then
+    rm -rf "$NVM_DIR"
     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
     load_nvm
   fi
