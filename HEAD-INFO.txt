@@ -1,0 +1,17 @@
+Repo: adiytharpansa/router-gratis-octop (dibuat 5 Nov 2026)
+Isi: skrip pasang/jalan + konfigurasi jalur tanpa kunci + panduan untuk
+FreeLLMAPI (github.com/tashfeenahmed/freellmapi). Kode FreeLLMAPI TIDAK
+disimpan di repo ini — skrip pasang mengunduhnya dari GitHub upstream dan
+menguncinya ke commit fb07845faf7cf986ea9f3692e055076035dd8739.
+
+Verifikasi agen (sandbox, 2026-11-05) atas commit tersebut:
+- npm install bersih (840 paket), server + dashboard menyala.
+- API http://localhost:3001/v1, dashboard http://localhost:5173.
+- Konfigurasi deklaratif diterapkan: 4 kunci (kilo, ovh, aihorde = tanpa
+  kunci; llm7 = token anonim publik "unused").
+- GET /v1/models -> 284 model.
+- POST /v1/chat/completions model "auto" -> dijawab Qwen3.5-397B-A17B
+  lewat jalur tanpa kunci. Rantai Octop -> router -> cloud terbukti jalan.
+
+Repo ini TIDAK berisi kunci API apa pun. Kunci enkripsi lokal dan akun
+dashboard dibuat di HP pengguna saat pasang.
