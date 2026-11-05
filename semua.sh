@@ -18,9 +18,9 @@ pastikan_router() {
 if ! tmux has-session -t "$SESI" 2>/dev/null; then
   echo "Menyalakan Octop + router..."
   tmux new-session -d -s "$SESI" -n server
-  # Perintah server Octop asli. Kata 'command' WAJIB ada: tanpa itu,
-  # ketikan ini memicu alias 'octop' lagi (puteran tak berujung).
-  tmux send-keys -t "$SESI:server" "command octop" Enter
+  # Perintah server Octop asli: dari venv khusus Octop milik user
+  # (~/octop-venv). Jalur penuh, jadi tidak menabrak alias 'octop'.
+  tmux send-keys -t "$SESI:server" "$HOME/octop-venv/bin/octop" Enter
   pastikan_router
 else
   echo "Sesi 'octop' sudah jalan — memastikan router ikut jalan..."
