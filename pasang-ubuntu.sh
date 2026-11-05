@@ -50,7 +50,7 @@ fi
 # --- 4) Pastikan Node.js cukup baru (perlu >= 22.13 untuk SQLite bawaan Node).
 #        Di Ubuntu, Node dipasang lewat nvm (tanpa perlu sudo).
 export NVM_DIR="$HOME/.nvm"
-load_nvm() { [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"; }
+load_nvm() { [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" || true; }
 load_nvm
 if ! command -v node >/dev/null 2>&1 || [ "$(node -p 'process.versions.node.split(".")[0]')" -lt 22 ]; then
   echo "Memasang Node.js 24 lewat nvm (sekali saja)..."
