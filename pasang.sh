@@ -33,14 +33,27 @@ fi
 command -v git >/dev/null 2>&1 || pkg install -y git
 echo "Node terpasang: $(node --version)"
 
-# --- 3) Unduh kode FreeLLMAPI dari GitHub bila belum ada.
-#        Dikunci ke commit yang sudah diuji agen (fb07845f).
+# --- 3) Unduh kode FreeLLMAPI bila belum ada — lewat ZIP yang BISA
+#        DILANJUTKAN bila putus (curl -C -), dikunci ke commit teruji.
+command -v curl >/dev/null 2>&1 || pkg install -y curl
+command -v unzip >/dev/null 2>&1 || pkg install -y unzip
+SHA="fb07845faf7cf986ea9f3692e055076035dd8739"
 if [ ! -f "$DIR/freellmapi/package.json" ]; then
-  echo "Mengunduh kode FreeLLMAPI dari GitHub (sekali saja)..."
-  git clone --depth 1 https://github.com/tashfeenahmed/freellmapi.git "$DIR/freellmapi"
-  git -C "$DIR/freellmapi" fetch --depth 1 origin fb07845faf7cf986ea9f3692e055076035dd8739 2>/dev/null \
-    && git -C "$DIR/freellmapi" checkout -q FETCH_HEAD \
-    || echo "(Memakai versi terbaru; penguncian versi dilewati.)"
+  echo "Mengunduh kode FreeLLMAPI (bisa dilanjutkan bila putus)..."
+  rm -rf "$DIR/freellmapi"
+  (cd "$DIR" && curl -L -C - -o freellmapi.zip "https://codeload.github.com/tashfeenahmed/freellmapi/zip/$SHA" \
+    && unzip -q -o freellmapi.zip && mv "freellmapi-$SHA" freellmapi) || true
+fi
+if [ ! -f "$DIR/freellmapi/package.json" ]; then
+  echo "Mencoba jalur cadangan (git clone)..."
+  rm -rf "$DIR/freellmapi"
+  git clone --depth 1 https://github.com/tashfeenahmed/freellmapi.git "$DIR/freellmapi" || true
+fi
+if [ ! -f "$DIR/freellmapi/package.json" ]; then
+  echo ""
+  echo "Unduhan belum utuh. Jalankan 'bash pasang.sh' SEKALI LAGI —"
+  echo "unduhannya MELANJUTKAN dari posisi terakhir, bukan mengulang dari nol."
+  exit 1
 fi
 
 # --- 4) Salin konfigurasi jalur tanpa kunci ke folder aplikasi.
